@@ -24,6 +24,14 @@ const userSchema = new Schema(
     },
     token: String,
     avatarURL: String,
+    verify: {
+      type: Boolean,
+      default: false,
+    },
+    verificationToken: {
+      type: String,
+      required: [true, 'Verify token is required'],
+    },
   },
   { versionKey: false, timestamps: true }
 );
@@ -46,6 +54,13 @@ const loginSchema = Joi.object({
   password: Joi.string().min(6).required(),
 });
 
+const emailSchema = Joi.object({
+  email: Joi.string().pattern(emailRegexp).required().messages({
+    'string.pattern.base':
+      '{{#label}} with value {:[.]} is not a valid email format',
+  }),
+});
+
 const subscriptionUpdateSchema = Joi.object({
   subscription: Joi.string()
     .valid(...subscriptionList)
@@ -56,6 +71,7 @@ const schemas = {
   registerSchema,
   loginSchema,
   subscriptionUpdateSchema,
+  emailSchema,
 };
 
 const User = model('user', userSchema);
